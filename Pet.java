@@ -1,15 +1,11 @@
 public class Pet {
-    private int id;
     private String name;
     private int age;
-    
-    private static int currId = 0;
     
     public Pet (String name, int age)
     {
         this.name = name;
         this.age = age;
-        setId(currId);
     }
     
     public void setName(String name)
@@ -22,10 +18,10 @@ public class Pet {
         this.age = age;
     }
     
-    private void setId(int id)
+    public void updatePet(String name, int age)
     {
-        this.id = id;
-        currId++;
+        this.name = name;
+        this.age = age;
     }
     
     public String getName()
@@ -36,15 +32,5 @@ public class Pet {
     public int getAge()
     {
         return age;
-    }
-    
-    public int getId()
-    {
-        return id;
-    }
-    
-    public static int getCurrId()
-    {
-        return currId;
     }
 }
