@@ -37,11 +37,11 @@ public class CSC422Assignment1
                   }
                   case 3 -> /* Update */
                   {
-                      underDev();
+                      updatePet();
                   }
                   case 4 -> /* Remove */
                   {
-                      underDev();
+                      deletePet();
                   }
                   case 5 -> /* Search name */
                   {
@@ -63,6 +63,7 @@ public class CSC422Assignment1
       }
   }  /* End menu() */
   
+  
   private static void printMenu()
   {
       System.out.println("\nWhat would you like to do?");
@@ -74,6 +75,11 @@ public class CSC422Assignment1
       System.out.println("6) Search pets by age");
       System.out.println("7) Exit program");
   }  /* End printMenu() */
+  
+/* -----------------------------------------
+    Running functions sorted alphabetically
+   -----------------------------------------
+ */
   
   
   private static void addPets()
@@ -98,7 +104,7 @@ public class CSC422Assignment1
               try
               {
                 int breakPoint = userIn.indexOf(" ");
-                if (breakPoint < 1)                               /* CASE: user entered space as the first character or no space was entered (not including done scenario) */
+                if (breakPoint < 1 || breakPoint > userIn.length() - 2)                               /* CASE: Valid index but either first character is a space, no space entered to separate out age */
                 {
                     System.out.println("Pet not added. Enter pet name followed by space followed by age as an integer.");
                 }
@@ -124,10 +130,35 @@ public class CSC422Assignment1
       }
   }  /* End addPets() */
   
-
-  private static void printPet(Pet pet)
+  
+  private static void deletePet()
   {
-      System.out.printf("| %3d | %-10s | %4d |%n", pet.getId(), pet.getName(), pet.getAge());
+      Scanner delIn = new Scanner(System.in);
+      viewPets();
+      System.out.print("Enter the pet ID to remove: ");
+      
+      try
+      {
+          int index = Integer.parseInt(delIn.nextLine());
+          if (index >= 0 && index < ALLPETS.size())
+          {
+              String petDetails = ALLPETS.get(index).getName() + " " + ALLPETS.get(index).getAge();
+              ALLPETS.remove(index);
+              System.out.println(petDetails + " is removed.");
+          }
+          else
+              System.out.println("Pet ID not found.");   /* CASE: Index parses but outside range of arraylist */
+      }
+      catch (NumberFormatException nfe)         /* CASE: Index entered doesn't parse to int */
+      {
+          System.out.println("Pet ID not found.");
+      }
+  }  /* End deletePet() */
+  
+
+  private static void printPet(int index, Pet pet)
+  {
+      System.out.printf("| %3d | %-10s | %4d |%n", index, pet.getName(), pet.getAge());
       
   }   /* End printPet() */
 
@@ -144,6 +175,7 @@ public class CSC422Assignment1
       System.out.print("------------");  /* Name column, no borders */
       System.out.println("-------+");    /* Age column plus both borders */
   }   /* End printREsultsHeader() */
+  
   
   private static void printResultsFooter(int results)
   {
@@ -169,10 +201,10 @@ public class CSC422Assignment1
           int age = Integer.parseInt(ageIn.nextLine());
           
           printResultsHeader();
-          for(Pet pet: ALLPETS)
-              if (pet.getAge() == age)
+          for (int i = 0; i < ALLPETS.size(); i++)
+              if (ALLPETS.get(i).getAge() == age)
               {
-                  printPet(pet);
+                  printPet(i, ALLPETS.get(i));
                   results++;
               }
           printResultsFooter(results);
@@ -194,11 +226,11 @@ public class CSC422Assignment1
       
       
       printResultsHeader();
-      for(Pet pet: ALLPETS)
+      for (int i = 0; i < ALLPETS.size(); i++)
       {
-          if (pet.getName().equalsIgnoreCase(name))    /* Compare regardless of capitalization */
+          if (ALLPETS.get(i).getName().equalsIgnoreCase(name))    /* Compare regardless of capitalization */
           {
-              printPet(pet);
+              printPet(i, ALLPETS.get(i));
               results++;
           }
       }
@@ -206,19 +238,66 @@ public class CSC422Assignment1
   }  /* End searchName() */
   
   
-  private static void underDev()
+  private static void underDev()          /* Should be defunct */
   {
       System.out.println("This function is currently under development");
   }  /* End underDev() */
   
   
+  private static void updatePet()
+  {
+      Scanner upIn = new Scanner(System.in);
+      viewPets();
+      System.out.print("\nEnter the pet ID to update: ");
+      
+      try
+      {
+          int index = Integer.parseInt(upIn.nextLine());
+          if (index >= 0 && index < ALLPETS.size())
+          {
+              String oldName = ALLPETS.get(index).getName();
+              int oldAge = ALLPETS.get(index).getAge();
+              
+              System.out.print("Enter new name and age: ");
+              String userInput = upIn.nextLine();
+              int breakpoint = userInput.indexOf(" ");
+              if (breakpoint < 1 || breakpoint > userInput.length() - 2)                     /* CASE: Valid index but either first character is a space, no space entered to separate out age */
+                  System.out.println("1.Pet not updated. Data must be name followed by space followed by non-negative integer.");
+              else
+              {
+                  try
+                  {
+                      String newName = userInput.substring(0, breakpoint);
+                      int newAge = Integer.parseInt(userInput.substring(breakpoint + 1));
+                      if (newAge >= 0)
+                      {
+                          ALLPETS.get(index).updatePet(newName, newAge);
+                          System.out.println(oldName + " " + oldAge + " changed to " + newName + " " + newAge + ".");
+                      }
+                      else                             /* CASE: Valid index, age parses, but age is negative */
+                          System.out.println("2.Pet not updated. Data must be name followed by space followed by non-negative integer.");
+                  }
+                  catch (NumberFormatException nfe2)   /* CASE: Valid index but age doesn't parse to int */
+                  {
+                      System.out.println("3.Pet not updated. Data must be name followed by space followed by non-negative integer.");
+                  }
+              }
+          }
+          else                                /* CASE: Index provided is an int but outside range of arraylist */
+              System.out.println("Not a valid ID.");
+      }
+      catch (NumberFormatException nfe)       /* CASE: index provided doesn't parse to int */
+      {
+          System.out.println("Not a valid ID.");
+      }
+  }  /* End updatePet() */
+  
+  
   private static void viewPets()
   {
       printResultsHeader();
-      ALLPETS.forEach(pet ->
-        {
-          printPet(pet);
-        });
+      for (int i = 0; i < ALLPETS.size(); i++)
+          printPet(i, ALLPETS.get(i));
       printResultsFooter(ALLPETS.size());
   }  /* End viewPets() */
 }
