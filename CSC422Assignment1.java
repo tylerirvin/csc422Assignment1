@@ -45,11 +45,11 @@ public class CSC422Assignment1
                   }
                   case 5 -> /* Search name */
                   {
-                      underDev();
+                      searchName();
                   }
                   case 6 -> /* Search age */
                   {
-                      underDev();
+                      searchAge();
                   }
                   case 7 -> System.out.println("\nGoodbye!");
                   default -> System.out.println("Please enter an integer between 1 & 7.");
@@ -157,10 +157,60 @@ public class CSC422Assignment1
   }   /* End printResultsFooter */
   
   
+  private static void searchAge()
+  {
+      Scanner ageIn = new Scanner(System.in);
+      int results = 0;                  /* Accumulator for matches */
+      
+      System.out.print("Enter an age to search: ");
+      
+      try
+      {
+          int age = Integer.parseInt(ageIn.nextLine());
+          
+          printResultsHeader();
+          for(Pet pet: ALLPETS)
+              if (pet.getAge() == age)
+              {
+                  printPet(pet);
+                  results++;
+              }
+          printResultsFooter(results);
+      }
+      catch (NumberFormatException nfe)     /* CASE: user input doesn't parse to an Integer. */
+      {
+          System.out.println("Age not recognized.");
+      }
+  }  /* End searchAge() */
+  
+  
+  private static void searchName()
+  {
+      Scanner useIn = new Scanner(System.in);
+      int results = 0;
+      
+      System.out.print("\nEnter a name to search: ");
+      String name = useIn.nextLine();
+      
+      
+      printResultsHeader();
+      for(Pet pet: ALLPETS)
+      {
+          if (pet.getName().equalsIgnoreCase(name))    /* Compare regardless of capitalization */
+          {
+              printPet(pet);
+              results++;
+          }
+      }
+      printResultsFooter(results);
+  }  /* End searchName() */
+  
+  
   private static void underDev()
   {
       System.out.println("This function is currently under development");
   }  /* End underDev() */
+  
   
   private static void viewPets()
   {
