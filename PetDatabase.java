@@ -60,13 +60,13 @@ public class PetDatabase {
             }
             catch (Exception e)               /* CASE: couldn't parse. Return false */
             {
-                e.printStackTrace();
+          //      e.printStackTrace();
                 return false;
             }
         }
         catch (IOException ioe)
         {
-            ioe.printStackTrace();
+          //  ioe.printStackTrace();
             return false;
         }
     } /* End save(filename) */

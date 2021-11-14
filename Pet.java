@@ -6,29 +6,39 @@ public class Pet implements Serializable {
     private String name;
     private int age;
     
-    public Pet (String name, int age)
+    public Pet (String name, int age) throws AgeException
     {
+        if (age < 1)
+            throw new AgeException("Age must be a positive integer.");
         this.name = name;
         this.age = age;
     } /* End constructor */
     
 /* SETTERS */    
-    public void setName(String name)
+    private void setName(String name)
     {
         this.name = name;
     } /* End setName(String) */
     
     
-    public void setAge(int age)
+    private void setAge(int age) throws AgeException
     {
-        this.age = age;
+        if (age < 1)
+            throw new AgeException("Age must be a positive integer.");
+        else
+            this.age = age;
     } /*End setAge(int) */
     
     
-    public void updatePet(String name, int age)
+    public void updatePet(String name, int age) throws AgeException
     {
-        this.name = name;
-        this.age = age;
+        if (age < 1)
+            throw new AgeException("Age must be a positive integer.");
+        else
+        {
+            this.setName(name);
+            this.setAge(age);
+        }
     } /* End updatePet (name, age) */
     
 /* GETTERS */

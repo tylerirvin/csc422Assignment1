@@ -40,7 +40,7 @@ public class PetList implements Serializable
     } /* End getPet(index) */
     
     
-    public int updatePet(int index, Pet newInfo)   /* Update exist pet. Return index of updated Pet. */
+    public int updatePet(int index, Pet newInfo) throws AgeException   /* Update exist pet. Return index of updated Pet. */
     {
         if (index >= 0 && index < pets.size())   /* Ensure index is in range */
         {
