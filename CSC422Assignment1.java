@@ -1,20 +1,35 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class CSC422Assignment1
 {
-    private static ArrayList<Pet> ALLPETS;
-  public static void main(String[] args)
-  {
-      System.out.println("Pet Database Program.");
-      menu();  /* something */
+    private static PetDatabase petDb;   /* Database of Pets */
     
-  } /* End main() */
+    
+    public static void main(String[] args)
+    {
+        System.out.println("Pet Database Program.");
+        initialize();
+        menu();
+    } /* End main() */
+  
+  
+  private static void initialize()    /* Create database and load file if present */
+  {
+      petDb = PetDatabase.getInstance();   /* Create singleton of PetDatabase or return existing */
+      
+      try                             /* Load saved data. If not present, an empty PetDatabase is returned */
+      {
+          petDb.load("savedPets.dat");
+      }
+      catch (IOException ioe){}
+  }  /* End initialize() */
+  
   
   private static void menu()
   {
       Scanner scIn = new Scanner(System.in);
-      ALLPETS = new ArrayList<>();
       
       int opt = 0;
       while (opt != 7)
@@ -51,7 +66,10 @@ public class CSC422Assignment1
                   {
                       searchAge();
                   }
-                  case 7 -> System.out.println("\nGoodbye!");
+                  case 7 -> /*Exit program */
+                  {
+                      closeProgram();
+                  }
                   default -> System.out.println("Please enter an integer between 1 & 7.");
               }
               
@@ -114,7 +132,7 @@ public class CSC422Assignment1
                     int age = Integer.parseInt(userIn.substring(userIn.indexOf(" ") + 1));  /* Try and parse after the space for the age */
                     if (age >= 0)                                                           /* CASE: non-negative age parsed correctly, add the pet to the arraylist */
                     {
-                        ALLPETS.add(new Pet(name, age));
+                        petDb.Pets().addPet(new Pet(name, age));
                         addIncrement++;
                     }
                     else                                                                    /* CASE: negative age parsed correctly, don't add and warn user */
@@ -131,6 +149,19 @@ public class CSC422Assignment1
   }  /* End addPets() */
   
   
+  private static void closeProgram()
+  {
+      boolean saved = petDb.save("savedPets.dat");
+      if (saved)
+          System.out.println("\nData saved!\nGoodbye!");
+      else
+      {
+          System.out.println("\nERROR: Data not saved!");
+          /* TODO: add in prompt for different save location? */
+      }
+  }  /* End closeProgram() */
+  
+  
   private static void deletePet()
   {
       Scanner delIn = new Scanner(System.in);
@@ -140,10 +171,10 @@ public class CSC422Assignment1
       try
       {
           int index = Integer.parseInt(delIn.nextLine());
-          if (index >= 0 && index < ALLPETS.size())
+          if (index >= 0 && index < petDb.Pets().size())
           {
-              String petDetails = ALLPETS.get(index).getName() + " " + ALLPETS.get(index).getAge();
-              ALLPETS.remove(index);
+              String petDetails = petDb.Pets().getPet(index).getName() + " " + petDb.Pets().getPet(index).getAge();
+              petDb.Pets().deletePet(index);
               System.out.println(petDetails + " is removed.");
           }
           else
@@ -201,10 +232,10 @@ public class CSC422Assignment1
           int age = Integer.parseInt(ageIn.nextLine());
           
           printResultsHeader();
-          for (int i = 0; i < ALLPETS.size(); i++)
-              if (ALLPETS.get(i).getAge() == age)
+          for (int i = 0; i < petDb.Pets().size(); i++)
+              if (petDb.Pets().getPet(i).getAge() == age)
               {
-                  printPet(i, ALLPETS.get(i));
+                  printPet(i, petDb.Pets().getPet(i));
                   results++;
               }
           printResultsFooter(results);
@@ -226,11 +257,11 @@ public class CSC422Assignment1
       
       
       printResultsHeader();
-      for (int i = 0; i < ALLPETS.size(); i++)
+      for (int i = 0; i < petDb.Pets().size(); i++)
       {
-          if (ALLPETS.get(i).getName().equalsIgnoreCase(name))    /* Compare regardless of capitalization */
+          if (petDb.Pets().getPet(i).getName().equalsIgnoreCase(name))    /* Compare regardless of capitalization */
           {
-              printPet(i, ALLPETS.get(i));
+              printPet(i, petDb.Pets().getPet(i));
               results++;
           }
       }
@@ -253,10 +284,10 @@ public class CSC422Assignment1
       try
       {
           int index = Integer.parseInt(upIn.nextLine());
-          if (index >= 0 && index < ALLPETS.size())
+          if (index >= 0 && index < petDb.Pets().size())
           {
-              String oldName = ALLPETS.get(index).getName();
-              int oldAge = ALLPETS.get(index).getAge();
+              String oldName = petDb.Pets().getPet(index).getName();
+              int oldAge = petDb.Pets().getPet(index).getAge();
               
               System.out.print("Enter new name and age: ");
               String userInput = upIn.nextLine();
@@ -271,7 +302,7 @@ public class CSC422Assignment1
                       int newAge = Integer.parseInt(userInput.substring(breakpoint + 1));
                       if (newAge >= 0)
                       {
-                          ALLPETS.get(index).updatePet(newName, newAge);
+                          petDb.Pets().getPet(index).updatePet(newName, newAge);
                           System.out.println(oldName + " " + oldAge + " changed to " + newName + " " + newAge + ".");
                       }
                       else                             /* CASE: Valid index, age parses, but age is negative */
@@ -296,8 +327,8 @@ public class CSC422Assignment1
   private static void viewPets()
   {
       printResultsHeader();
-      for (int i = 0; i < ALLPETS.size(); i++)
-          printPet(i, ALLPETS.get(i));
-      printResultsFooter(ALLPETS.size());
+      for (int i = 0; i < petDb.Pets().size(); i++)
+          printPet(i, petDb.Pets().getPet(i));
+      printResultsFooter(petDb.Pets().size());
   }  /* End viewPets() */
 }
