@@ -7,7 +7,7 @@ public class CSC422Assignment1
   public static void main(String[] args)
   {
       System.out.println("Pet Database Program.");
-      menu();
+      menu();  /* something */
     
   } /* End main() */
   
